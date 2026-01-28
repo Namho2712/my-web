@@ -1,0 +1,304 @@
+A Cường, [28/01/2026 22:47]
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý quần áo</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f6fb;
+  margin: 0;
+  padding: 16px;
+  overflow-x: hidden;
+}
+
+.container {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  max-width: 100%;
+  margin: auto;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.gender {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.gender-box {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.gender-box label {
+  font-weight: bold;
+}
+
+.gender-box input {
+  width: 100%;
+  border: none;
+  font-size: 18px;
+  outline: none;
+}
+
+.add {
+  width: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tag {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  font-weight: bold;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.grid input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 14px;
+  border: 2px solid #c7d7f5;
+  text-align: center;
+  font-size: 16px;
+}
+
+.fixed input {
+  background: #f3f4f6;
+}
+
+.delete {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Quản lý quần áo</h1>
+
+  <input class="input" placeholder="🔍 Tìm theo tên mẫu">
+  <input id="name" class="input" placeholder="Tên mẫu quần áo">
+
+  <div class="gender">
+    <div class="gender-box">
+      <label>Nam</label>
+      <input id="nam" type="number" value="0"
+        onfocus="if(this.value==0)this.value=''"
+        onblur="if(this.value==='')this.value=0">
+    </div>
+    <div class="gender-box">
+      <label>Nữ</label>
+      <input id="nu" type="number" value="0"
+        onfocus="if(this.value==0)this.value=''"
+        onblur="if(this.value==='')this.value=0">
+    </div>
+  </div>
+
+  <button class="add" onclick="addCard()">+ Thêm mẫu</button>
+
+  <div id="list"></div>
+</div>
+
+<!-- POPUP XÁC NHẬN XÓA -->
+<div id="confirmOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:#fff;
+    border-radius:20px;
+    padding:20px;
+    width:90%;
+    max-width:320px;
+    text-align:center;
+  ">
+    <h3 style="margin-top:0">Xác nhận xóa</h3>
+    <p>Bạn có chắc chắn muốn xóa mẫu này không?</p>
+    <div style="display:flex; gap:12px; margin-top:20px;">
+      <button onclick="closeConfirm()" style="flex:1; background:#e5e7eb; color:#111; border:none; border-radius:14px; padding:12px;">Hủy</button>
+      <button onclick="confirmDelete()" style="flex:1; background:#ef4444; color:#fff; border:none; border-radius:14px; padding:12px;">Xóa</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let deleteTarget = null;
+
+function addCard() {
+  const name = document.getElementById('name').value.trim();
+  const nam = Number(document.getElementById('nam').value || 0);
+  const nu = Number(document.getElementById('nu').value || 0);
+
+  if (!name) return;
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  card.innerHTML = `
+    <div class="card-header">
+      <span class="tag">${name}</span>
+      <strong>Total: <span class="total">${nam + nu}</span></strong>
+    </div>
+
+A Cường, [28/01/2026 22:47]
+<div class="grid">
+      <div></div>
+      <strong>Tổng</strong>
+      <strong>Còn hàng</strong>
+      <strong>Đang thuê</strong>
+
+      <strong>Nam</strong>
+      <div class="fixed">
+        <input type="number" value="${nam}" oninput="updateBase(this)">
+      </div>
+      <input class="remain-nam" value="${nam}" disabled>
+      <input type="number" value="0"
+        oninput="rentChange(this,'nam')"
+        onfocus="if(this.value==0)this.value=''"
+        onblur="if(this.value==='')this.value=0">
+
+      <strong>Nữ</strong>
+      <div class="fixed">
+        <input type="number" value="${nu}" oninput="updateBase(this)">
+      </div>
+      <input class="remain-nu" value="${nu}" disabled>
+      <input type="number" value="0"
+        oninput="rentChange(this,'nu')"
+        onfocus="if(this.value==0)this.value=''"
+        onblur="if(this.value==='')this.value=0">
+    </div>
+
+    <button class="delete" onclick="openConfirm(this)">🗑 Xóa</button>
+  `;
+
+  document.getElementById('list').appendChild(card);
+
+  document.getElementById('name').value = '';
+  document.getElementById('nam').value = 0;
+  document.getElementById('nu').value = 0;
+}
+
+function rentChange(input, type) {
+  const card = input.closest('.card');
+  const bases = card.querySelectorAll('.fixed input');
+  const base = type === 'nam'
+    ? Number(bases[0].value || 0)
+    : Number(bases[1].value || 0);
+
+  let rent = Number(input.value || 0);
+  if (rent > base) {
+    rent = base;
+    input.value = base;
+  }
+
+  card.querySelector('.remain-' + type).value = base - rent;
+}
+
+function updateBase(input) {
+  const card = input.closest('.card');
+  const bases = card.querySelectorAll('.fixed input');
+  const rents = card.querySelectorAll('.grid input[type="number"]:not(.fixed input)');
+  const remains = card.querySelectorAll('.remain-nam, .remain-nu');
+
+  let total = 0;
+
+  bases.forEach((b, i) => {
+    const base = Number(b.value || 0);
+    let rent = Number(rents[i].value || 0);
+    if (rent > base) {
+      rent = base;
+      rents[i].value = base;
+    }
+    remains[i].value = base - rent;
+    total += base;
+  });
+
+  card.querySelector('.total').innerText = total;
+}
+
+/* POPUP XÓA */
+function openConfirm(btn) {
+  deleteTarget = btn;
+  document.getElementById('confirmOverlay').style.display = 'flex';
+}
+
+function closeConfirm() {
+  deleteTarget = null;
+  document.getElementById('confirmOverlay').style.display = 'none';
+}
+
+function confirmDelete() {
+  if (deleteTarget) {
+    deleteTarget.parentElement.remove();
+  }
+  closeConfirm();
+}
+</script>
+
+</body>
+</html>
