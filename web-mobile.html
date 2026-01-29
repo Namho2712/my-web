@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý quần áo</title>
+
+<style>
+* { 
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 { 
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Ô tìm kiếm */
+.search-box {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: #fff;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-result {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Form nhập liệu */
+.input-form {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 2px solid #e2e8f0;
+}
+
+.input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  margin-bottom: 12px;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.gender {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.gender-box {
+  background: #fff;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px;
+  transition: all 0.3s;
+}
+
+.gender-box:active {
+  transform: scale(0.98);
+}
+
+.gender-box label {
+  display: block;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.gender-box input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.add {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.add:active {
+  transform: scale(0.98);
+}
+
+/* Card sản phẩm */
+.card {
+  background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s;
+}
+
+.card.hidden {
+  display: none;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  gap: 8px;
+}
+
+.tag {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+  word-break: break-word;
+  flex: 1;
+  min-width: 0;
+}
+
+.total-badge {
+  padding: 6px 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #475569;
+  font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.total-number {
+  color: #667eea;
+  font-size: 16px;
+  margin-left: 4px;
+}
+
+/* Grid thông tin - MOBILE OPTIMIZED */
+.info-section {
+  margin-bottom: 12px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.info-label {
+  font-weight: 700;
+  color: #1f2937;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 12px;
+  min-width: 50px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.info-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-header {
+  font-weight: 700;
+  color: #475569;
+  font-size: 10px;
+  text-align: center;
+  padding: 4px;
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+.info-box input {
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff;
+  width: 100%;
+}
+
+.fixed-input { 
+  background: #f8fafc !important;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.remain-input {
+  background: #fef3c7 !important;
+  border-color: #fbbf24 !important;
+  color: #92400e;
+  font-weight: 700;
+}
+
+.rent-btn {
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 11px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  white-space: nowrap;
+  width: 100%;
+}
+
+.rent-btn:active {
+  transform: scale(0.95);
+}
+
+.rent-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Thông tin thuê */
+.rent-info {
+  margin: 10px 0;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-left: 4px solid #10b981;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #065f46;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: slideIn 0.3s ease-out;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.rent-info-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.rent-delete-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 11px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rent-delete-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.rent-info-icon {
+  font-size: 16px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid #e2e8f0;
+}
+
+.delete {
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+}
+
+.delete:active {
+  transform: scale(0.95);
+}
+
+/* POPUP - Mobile Optimized */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.popup {
+  background: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.popup h3 {
+  margin: 0 0 20px 0;
+  color: #1f2937;
+  font-size: 20px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.popup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: #475569;
+  font-size: 13px;
+}
+
+.popup input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  border: 2px solid #cbd5e1;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.popup input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.popup-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.popup button {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.btn-ok {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-ok:active {
+  transform: scale(0.95);
+}
+
+.btn-cancel {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.btn-cancel:active {
+  transform: scale(0.95);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* TABLET & DESKTOP */
+@media (min-width: 640px) {
+  body {
+    padding: 20px;
+  }
+  
+  .container {
+    padding: 32px;
+    border-radius: 24px;
+  }
+  
+  h1 {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+  
+  .search-box {
+    margin-bottom: 24px;
+  }
+  
+  .search-input {
+    padding: 16px 16px 16px 50px;
+    font-size: 16px;
+  }
+  
+  .search-icon {
+    font-size: 20px;
+    left: 18px;
+  }
+  
+  .input-form {
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .input {
+    padding: 16px;
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .gender {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .gender-box {
+    padding: 16px;
+  }
+  
+  .gender-box label {
+    font-size: 14px;
+  }
+  
+  .gender-box input {
+    padding: 12px;
+    font-size: 18px;
+  }
+  
+  .add {
+    padding: 18px;
+    font-size: 18px;
+  }
+  
+  .card {
+    padding: 24px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+  }
+  
+  .card:hover {
+    border-color: #667eea;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+  
+  .card-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+  }
+  
+  .tag {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+  
+  .total-badge {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .total-number {
+    font-size: 20px;
+    margin-left: 8px;
+  }
+  
+  .info-section {
+    margin-bottom: 16px;
+  }
+  
+  .info-row {
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .info-label {
+    padding: 10px 16px;
+    font-size: 14px;
+    min-width: 80px;
+  }
+  
+  .info-inputs {
+    gap: 12px;
+  }
+  
+  .info-header {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  .info-box input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .rent-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .rent-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.5);
+  }
+  
+  .rent-info {
+    margin: 12px 0;
+    padding: 14px 18px;
+    font-size: 14px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+  
+  .rent-info-icon {
+    font-size: 18px;
+  }
+  
+  .card-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  
+  .delete {
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+  
+  .delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
+  }
+  
+  .popup {
+    padding: 32px;
+    border-radius: 20px;
+  }
+  
+  .popup h3 {
+    font-size: 24px;
+    margin-bottom: 24px;
+    gap: 10px;
+  }
+  
+  .popup label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .popup input {
+    padding: 14px;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .popup-buttons {
+    margin-top: 24px;
+    gap: 12px;
+  }
+  
+  .popup button {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .btn-ok:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  }
+  
+  .btn-cancel:hover {
+    background: #cbd5e1;
+    transform: translateY(-2px);
+  }
+  
+  .empty-state {
+    padding: 60px 20px;
+  }
+  
+  .empty-state-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  
+  .empty-state-text {
+    font-size: 18px;
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media (max-width: 639px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>👔 Quản lý quần áo</h1>
+
+  <!-- Ô tìm kiếm -->
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input 
+      type="text" 
+      id="searchInput" 
+      class="search-input" 
+      placeholder="Tìm theo tên mẫu..."
+      oninput="searchCards()"
+    >
+    <div id="searchResult" class="search-result"></div>
+  </div>
+
+  <div class="input-form">
+    <input id="name" class="input" placeholder="🏷️ Nhập tên mẫu quần áo...">
+    <div class="gender">
+      <div class="gender-box">
+        <label>👨 Nam</label>
+        <input id="nam" type="number" value="0" min="0">
+      </div>
+      <div class="gender-box">
+        <label>👩 Nữ</label>
+        <input id="nu" type="number" value="0" min="0">
+      </div>
+    </div>
+    <button class="add" onclick="addCard()">✨ Thêm mẫu mới</button>
+  </div>
+
+  <div id="list"></div>
+  
+  <div id="emptyState" class="empty-state">
+    <div class="empty-state-icon">👕</div>
+    <div class="empty-state-text">Chưa có mẫu quần áo nào</div>
+  </div>
+</div>
+
+<!-- POPUP THUÊ -->
+<div id="rentPopup" class="overlay" onclick="closeRentIfClickOutside(event)">
+  <div class="popup" onclick="event.stopPropagation()">
+    <h3>📝 Thông tin thuê</h3>
+    
+    <label>📅 Ngày thuê:</label>
+    <input id="rentDate" type="date">
+    
+    <label>🔢 Số lượng:</label>
+    <input id="rentQty" type="number" placeholder="Nhập số lượng" min="1">
+    
+    <div class="popup-buttons">
+      <button class="btn-ok" onclick="confirmRent()">✓ OK</button>
+      <button class="btn-cancel" onclick="closeRent()">✗ Hủy</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRentData = null;
+
+// Hàm tính số lượng còn dựa trên ngày thuê
+function calculateRemaining(card, type) {
+  const totalInput = card.querySelector(`.info-row:has(.remain-${type}) .fixed-input`);
+  const total = +totalInput.value;
+  
+  const rentContainer = card.querySelector(`.rent-info-${type}`);
+  const rentDivs = rentContainer.querySelectorAll('.rent-info');
+  
+  let usedQty = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  rentDivs.forEach(rentDiv => {
+    const rentDateStr = rentDiv.dataset.rentDate; // Format: YYYY-MM-DD
+    const rentDate = new Date(rentDateStr);
+    rentDate.setHours(0, 0, 0, 0);
+    
+    // Chỉ tính số đã thuê nếu ngày thuê <= ngày hiện tại
+    if (rentDate <= today) {
+      usedQty += +rentDiv.dataset.qty;
+    }
+  });
+  
+  return total - usedQty;
+}
+
+// Cập nhật hiển thị số còn lại cho tất cả card
+function updateAllRemaining() {
+  const cards = document.querySelectorAll('.card');
+  
+  cards.forEach(card => {
+    // Cập nhật Nam
+    const namRemain = calculateRemaining(card, 'nam');
+    const namRemainInput = card.querySelector('.remain-nam');
+    namRemainInput.value = namRemain;
+    
+    const namBtn = card.querySelector('.info-row:has(.remain-nam) .rent-btn');
+    if (namRemain <= 0) {
+      namBtn.disabled = true;
+      namBtn.style.opacity = '0.5';
+      namBtn.style.cursor = 'not-allowed';
+    } else {
+      namBtn.disabled = false;
+      namBtn.style.opacity = '1';
+      namBtn.style.cursor = 'pointer';
+    }
+    
+    // Cập nhật Nữ
+    const nuRemain = calculateRemaining(card, 'nu');
+    const nuRemainInput = card.querySelector('.remain-nu');
+    nuRemainInput.value = nuRemain;
+    
+    const nuBtn = card.querySelector('.info-row:has(.remain-nu) .rent-btn');
+    if (nuRemain <= 0) {
+      nuBtn.disabled = true;
+      nuBtn.style.opacity = '0.5';
+      nuBtn.style.cursor = 'not-allowed';
+    } else {
+      nuBtn.disabled = false;
+      nuBtn.style.opacity = '1';
+      nuBtn.style.cursor = 'pointer';
+    }
+  });
+}
+
+// Lưu dữ liệu vào LocalStorage
+function saveData() {
+  const list = document.getElementById('list');
+  const cards = list.querySelectorAll('.card');
+  const data = [];
+  
+  cards.forEach(card => {
+    const name = card.querySelector('.tag').textContent;
+    const namTotal = +card.querySelector('.info-row:nth-child(1) .fixed-input').value;
+    const nuTotal = +card.querySelector('.info-row:nth-child(2) .fixed-input').value;
+    
+    // Lấy thông tin thuê Nam
+    const namRents = [];
+    const namRentContainer = card.querySelector('.rent-info-nam');
+    namRentContainer.querySelectorAll('.rent-info').forEach(rentDiv => {
+      const text = rentDiv.querySelector('.rent-info-content span:last-child').textContent;
+      const qty = +rentDiv.dataset.qty;
+      const rentDate = rentDiv.dataset.rentDate; // YYYY-MM-DD
+      namRents.push({ text, qty, rentDate });
+    });
+    
+    // Lấy thông tin thuê Nữ
+    const nuRents = [];
+    const nuRentContainer = card.querySelector('.rent-info-nu');
+    nuRentContainer.querySelectorAll('.rent-info').forEach(rentDiv => {
+      const text = rentDiv.querySelector('.rent-info-content span:last-child').textContent;
+      const qty = +rentDiv.dataset.qty;
+      const rentDate = rentDiv.dataset.rentDate; // YYYY-MM-DD
+      nuRents.push({ text, qty, rentDate });
+    });
+    
+    data.push({
+      name,
+      namTotal,
+      nuTotal,
+      namRents,
+      nuRents
+    });
+  });
+  
+  localStorage.setItem('clothesData', JSON.stringify(data));
+}
+
+// Xóa toàn bộ dữ liệu
+function clearAllData() {
+  if (confirm('⚠️ Bạn có chắc muốn xóa TOÀN BỘ dữ liệu? Hành động này không thể hoàn tác!')) {
+    localStorage.removeItem('clothesData');
+    document.getElementById('list').innerHTML = '';
+    updateEmptyState();
+    alert('✅ Đã xóa toàn bộ dữ liệu!');
+  }
+}
+
+// Load dữ liệu từ LocalStorage
+function loadData() {
+  const saved = localStorage.getItem('clothesData');
+  if (!saved) return;
+  
+  const data = JSON.parse(saved);
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="tag">${item.name}</span>
+        <div class="total-badge">
+          Tổng: <span class="total-number">${item.namTotal + item.nuTotal}</span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-row">
+          <div class="info-label">👨 Nam</div>
+          <div class="info-inputs">
+            <div class="info-box">
+              <div class="info-header">Tổng</div>
+              <input class="fixed-input" value="${item.namTotal}" readonly>
+            </div>
+            <div class="info-box">
+              <div class="info-header">Còn</div>
+              <input class="remain-nam remain-input" value="${item.namTotal}" disabled>
+            </div>
+            <div class="info-box">
+              <div class="info-header">Thuê</div>
+              <button class="rent-btn" onclick="openRent(this,'nam')">+ Thuê</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-row">
+          <div class="info-label">👩 Nữ</div>
+          <div class="info-inputs">
+            <div class="info-box">
+              <div class="info-header">Tổng</div>
+              <input class="fixed-input" value="${item.nuTotal}" readonly>
+            </div>
+            <div class="info-box">
+              <div class="info-header">Còn</div>
+              <input class="remain-nu remain-input" value="${item.nuTotal}" disabled>
+            </div>
+            <div class="info-box">
+              <div class="info-header">Thuê</div>
+              <button class="rent-btn" onclick="openRent(this,'nu')">+ Thuê</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rent-info-nam" style="display:none;"></div>
+      <div class="rent-info-nu" style="display:none;"></div>
+
+      <div class="card-footer">
+        <button class="delete" onclick="deleteCard(this)">🗑️ Xóa</button>
+      </div>
+    `;
+    
+    list.appendChild(card);
+    
+    // Restore thông tin thuê Nam
+    if (item.namRents.length > 0) {
+      const namContainer = card.querySelector('.rent-info-nam');
+      namContainer.style.display = 'block';
+      item.namRents.forEach(rent => {
+        const rentDiv = document.createElement('div');
+        rentDiv.className = 'rent-info';
+        rentDiv.dataset.qty = rent.qty;
+        rentDiv.dataset.type = 'nam';
+        rentDiv.dataset.rentDate = rent.rentDate; // Lưu ngày thuê gốc
+        rentDiv.innerHTML = `
+          <div class="rent-info-content">
+            <span class="rent-info-icon">👔</span>
+            <strong>Nam:</strong> 
+            <span>${rent.text}</span>
+          </div>
+          <button class="rent-delete-btn" onclick="deleteRent(this)">✗</button>
+        `;
+        namContainer.appendChild(rentDiv);
+      });
+      // Sắp xếp theo ngày
+      sortRentsByDate(namContainer);
+    }
+    
+    // Restore thông tin thuê Nữ
+    if (item.nuRents.length > 0) {
+      const nuContainer = card.querySelector('.rent-info-nu');
+      nuContainer.style.display = 'block';
+      item.nuRents.forEach(rent => {
+        const rentDiv = document.createElement('div');
+        rentDiv.className = 'rent-info';
+        rentDiv.dataset.qty = rent.qty;
+        rentDiv.dataset.type = 'nu';
+        rentDiv.dataset.rentDate = rent.rentDate; // Lưu ngày thuê gốc
+        rentDiv.innerHTML = `
+          <div class="rent-info-content">
+            <span class="rent-info-icon">👗</span>
+            <strong>Nữ:</strong> 
+            <span>${rent.text}</span>
+          </div>
+          <button class="rent-delete-btn" onclick="deleteRent(this)">✗</button>
+        `;
+        nuContainer.appendChild(rentDiv);
+      });
+      // Sắp xếp theo ngày
+      sortRentsByDate(nuContainer);
+    }
+  });
+  
+  // Tính toán lại số còn dựa trên ngày hiện tại
+  updateAllRemaining();
+  updateEmptyState();
+}
+
+function updateEmptyState() {
+  const list = document.getElementById('list');
+  const emptyState = document.getElementById('emptyState');
+  const cards = list.querySelectorAll('.card:not(.hidden)');
+  emptyState.style.display = cards.length === 0 ? 'block' : 'none';
+}
+
+function searchCards() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.card');
+  let visibleCount = 0;
+  
+  cards.forEach(card => {
+    const name = card.querySelector('.tag').textContent.toLowerCase();
+    if (name.includes(searchTerm)) {
+      card.classList.remove('hidden');
+      visibleCount++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+  
+  const searchResult = document.getElementById('searchResult');
+  if (searchTerm) {
+    searchResult.textContent = `Tìm thấy ${visibleCount} kết quả`;
+  } else {
+    searchResult.textContent = '';
+  }
+  
+  updateEmptyState();
+}
+
+function addCard() {
+  const name = document.getElementById('name').value.trim();
+  const nam = +document.getElementById('nam').value;
+  const nu = +document.getElementById('nu').value;
+  
+  if (!name) {
+    alert('⚠️ Vui lòng nhập tên mẫu!');
+    return;
+  }
+  
+  if (nam === 0 && nu === 0) {
+    alert('⚠️ Vui lòng nhập số lượng!');
+    return;
+  }
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  card.innerHTML = `
+    <div class="card-header">
+      <span class="tag">${name}</span>
+      <div class="total-badge">
+        Tổng: <span class="total-number">${nam + nu}</span>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-row">
+        <div class="info-label">👨 Nam</div>
+        <div class="info-inputs">
+          <div class="info-box">
+            <div class="info-header">Tổng</div>
+            <input class="fixed-input" value="${nam}" readonly>
+          </div>
+          <div class="info-box">
+            <div class="info-header">Còn</div>
+            <input class="remain-nam remain-input" value="${nam}" disabled>
+          </div>
+          <div class="info-box">
+            <div class="info-header">Thuê</div>
+            <button class="rent-btn" onclick="openRent(this,'nam')" ${nam === 0 ? 'disabled' : ''}>+ Thuê</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="info-row">
+        <div class="info-label">👩 Nữ</div>
+        <div class="info-inputs">
+          <div class="info-box">
+            <div class="info-header">Tổng</div>
+            <input class="fixed-input" value="${nu}" readonly>
+          </div>
+          <div class="info-box">
+            <div class="info-header">Còn</div>
+            <input class="remain-nu remain-input" value="${nu}" disabled>
+          </div>
+          <div class="info-box">
+            <div class="info-header">Thuê</div>
+            <button class="rent-btn" onclick="openRent(this,'nu')" ${nu === 0 ? 'disabled' : ''}>+ Thuê</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="rent-info-nam" style="display:none;"></div>
+    <div class="rent-info-nu" style="display:none;"></div>
+
+    <div class="card-footer">
+      <button class="delete" onclick="deleteCard(this)">🗑️ Xóa</button>
+    </div>
+  `;
+  
+  document.getElementById('list').appendChild(card);
+  
+  document.getElementById('name').value = '';
+  document.getElementById('nam').value = '0';
+  document.getElementById('nu').value = '0';
+  document.getElementById('name').focus();
+  
+  document.getElementById('searchInput').value = '';
+  searchCards();
+  
+  updateEmptyState();
+  saveData(); // Lưu sau khi thêm
+}
+
+function deleteCard(button) {
+  if (confirm('🗑️ Bạn có chắc muốn xóa mẫu này?')) {
+    button.closest('.card').remove();
+    searchCards();
+    updateEmptyState();
+    saveData(); // Lưu sau khi xóa
+  }
+}
+
+function openRent(button, type) {
+  const card = button.closest('.card');
+  const remainQty = calculateRemaining(card, type);
+  
+  if (remainQty <= 0) {
+    alert('⚠️ Không còn hàng để cho thuê!');
+    return;
+  }
+  
+  currentRentData = { button, type, card };
+  
+  document.getElementById('rentQty').max = remainQty;
+  document.getElementById('rentQty').value = '';
+  document.getElementById('rentDate').value = '';
+  
+  document.getElementById('rentPopup').style.display = 'flex';
+  setTimeout(() => document.getElementById('rentDate').focus(), 100);
+}
+
+function closeRent() {
+  document.getElementById('rentPopup').style.display = 'none';
+  document.getElementById('rentQty').value = '';
+  document.getElementById('rentDate').value = '';
+  currentRentData = null;
+}
+
+function closeRentIfClickOutside(event) {
+  if (event.target === event.currentTarget) {
+    closeRent();
+  }
+}
+
+function confirmRent() {
+  const qty = +document.getElementById('rentQty').value;
+  const dateInput = document.getElementById('rentDate').value;
+  
+  if (!dateInput) {
+    alert('⚠️ Vui lòng chọn ngày thuê!');
+    document.getElementById('rentDate').focus();
+    return;
+  }
+  
+  if (!qty || qty <= 0) {
+    alert('⚠️ Vui lòng nhập số lượng hợp lệ!');
+    document.getElementById('rentQty').focus();
+    return;
+  }
+  
+  // Kiểm tra số còn theo thời gian thực
+  const currentRemain = calculateRemaining(currentRentData.card, currentRentData.type);
+  
+  if (qty > currentRemain) {
+    alert(`⚠️ Số lượng vượt quá số hàng còn lại (${currentRemain})!`);
+    document.getElementById('rentQty').focus();
+    return;
+  }
+  
+  const date = new Date(dateInput);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const formattedDate = `${day}/${month}/${year}`;
+  
+  const rentInfoContainer = currentRentData.card.querySelector(`.rent-info-${currentRentData.type}`);
+  rentInfoContainer.style.display = 'block';
+  
+  const icon = currentRentData.type === 'nam' ? '👔' : '👗';
+  const label = currentRentData.type === 'nam' ? 'Nam' : 'Nữ';
+  
+  // Tạo một dòng thuê mới
+  const rentInfoDiv = document.createElement('div');
+  rentInfoDiv.className = 'rent-info';
+  rentInfoDiv.dataset.qty = qty;
+  rentInfoDiv.dataset.type = currentRentData.type;
+  rentInfoDiv.dataset.rentDate = dateInput; // Lưu ngày gốc YYYY-MM-DD
+  rentInfoDiv.innerHTML = `
+    <div class="rent-info-content">
+      <span class="rent-info-icon">${icon}</span>
+      <strong>${label}:</strong> 
+      <span>${formattedDate} • ${qty} cái</span>
+    </div>
+    <button class="rent-delete-btn" onclick="deleteRent(this)">✗</button>
+  `;
+  
+  // Thêm và sắp xếp theo ngày
+  rentInfoContainer.appendChild(rentInfoDiv);
+  sortRentsByDate(rentInfoContainer);
+  
+  // Cập nhật số còn theo thời gian thực
+  updateAllRemaining();
+  
+  saveData(); // Lưu sau khi thuê
+  closeRent();
+}
+
+// Hàm sắp xếp danh sách thuê theo ngày
+function sortRentsByDate(container) {
+  const rentDivs = Array.from(container.querySelectorAll('.rent-info'));
+  
+  rentDivs.sort((a, b) => {
+    const dateA = new Date(a.dataset.rentDate);
+    const dateB = new Date(b.dataset.rentDate);
+    return dateA - dateB; // Sắp xếp tăng dần (ngày sớm nhất lên đầu)
+  });
+  
+  // Xóa tất cả và thêm lại theo thứ tự
+  container.innerHTML = '';
+  rentDivs.forEach(div => container.appendChild(div));
+}
+
+function deleteRent(button) {
+  if (!confirm('🔄 Xóa thông tin thuê này?')) {
+    return;
+  }
+  
+  const rentInfoDiv = button.closest('.rent-info');
+  const card = button.closest('.card');
+  const type = rentInfoDiv.dataset.type;
+  
+  // Xóa dòng thuê
+  rentInfoDiv.remove();
+  
+  // Ẩn container nếu không còn thông tin thuê nào
+  const rentInfoContainer = card.querySelector(`.rent-info-${type}`);
+  if (rentInfoContainer.children.length === 0) {
+    rentInfoContainer.style.display = 'none';
+  }
+  
+  // Cập nhật số còn theo thời gian thực
+  updateAllRemaining();
+  
+  saveData(); // Lưu sau khi xóa thông tin thuê
+}
+
+document.getElementById('rentDate').valueAsDate = new Date();
+
+document.getElementById('name').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addCard();
+  }
+});
+
+document.getElementById('rentQty').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    confirmRent();
+  }
+});
+
+// Prevent double-tap zoom on buttons (iOS)
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
+
+// Load dữ liệu khi trang được tải
+loadData();
+updateEmptyState();
+</script>
+
+</body>
+</html>
