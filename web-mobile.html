@@ -362,6 +362,18 @@ h1 {
   }
 }
 
+@keyframes flashUpdate {
+  0%, 100% {
+    background: #fef3c7;
+    border-color: #fbbf24;
+  }
+  50% {
+    background: #fef08a;
+    border-color: #f59e0b;
+    transform: scale(1.05);
+  }
+}
+
 .rent-info-icon {
   font-size: 16px;
 }
@@ -839,7 +851,18 @@ function updateAllRemaining() {
     // Cập nhật Nam
     const namRemain = calculateRemaining(card, 'nam');
     const namRemainInput = card.querySelector('.remain-nam');
-    namRemainInput.value = namRemain;
+    const oldNamValue = +namRemainInput.value;
+    
+    if (oldNamValue !== namRemain) {
+      namRemainInput.value = namRemain;
+      // Hiệu ứng flash khi thay đổi
+      namRemainInput.style.animation = 'none';
+      setTimeout(() => {
+        namRemainInput.style.animation = 'flashUpdate 0.5s ease';
+      }, 10);
+    } else {
+      namRemainInput.value = namRemain;
+    }
     
     const namBtn = card.querySelector('.info-row:has(.remain-nam) .rent-btn');
     if (namRemain <= 0) {
@@ -855,7 +878,18 @@ function updateAllRemaining() {
     // Cập nhật Nữ
     const nuRemain = calculateRemaining(card, 'nu');
     const nuRemainInput = card.querySelector('.remain-nu');
-    nuRemainInput.value = nuRemain;
+    const oldNuValue = +nuRemainInput.value;
+    
+    if (oldNuValue !== nuRemain) {
+      nuRemainInput.value = nuRemain;
+      // Hiệu ứng flash khi thay đổi
+      nuRemainInput.style.animation = 'none';
+      setTimeout(() => {
+        nuRemainInput.style.animation = 'flashUpdate 0.5s ease';
+      }, 10);
+    } else {
+      nuRemainInput.value = nuRemain;
+    }
     
     const nuBtn = card.querySelector('.info-row:has(.remain-nu) .rent-btn');
     if (nuRemain <= 0) {
@@ -1336,6 +1370,23 @@ document.addEventListener('touchend', (e) => {
 // Load dữ liệu khi trang được tải
 loadData();
 updateEmptyState();
+
+// Tự động cập nhật số còn mỗi phút
+setInterval(() => {
+  updateAllRemaining();
+}, 3600000); // 3600000 = 60 phút
+
+// Cập nhật khi người dùng quay lại tab/app
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    updateAllRemaining();
+  }
+});
+
+// Cập nhật khi app được focus lại (cho mobile)
+window.addEventListener('focus', () => {
+  updateAllRemaining();
+});
 </script>
 
 </body>
