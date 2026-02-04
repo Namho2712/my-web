@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý khách hàng thuê</title>
+
+<style>
+* { 
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 { 
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Ô tìm kiếm */
+.search-box {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: #fff;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-result {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Form nhập liệu */
+.input-form {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 2px solid #e2e8f0;
+}
+
+.input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  margin-bottom: 12px;
+  font-size: 15px;
+  transition: all 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea.input {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.item-selector {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.item-search {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: #fff;
+}
+
+.item-search:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon-item {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.item-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  margin-top: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+  z-index: 100;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.item-dropdown.show {
+  display: block;
+}
+
+.item-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.item-option:hover {
+  background: #f8fafc;
+}
+
+.item-option:active {
+  background: #e2e8f0;
+}
+
+.item-option:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.item-details {
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.no-items {
+  padding: 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.selected-items {
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.selected-items.show {
+  display: block;
+}
+
+.selected-items-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.selected-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin: 4px 4px 4px 0;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+}
+
+.remove-item {
+  cursor: pointer;
+  color: #ef4444;
+  font-weight: 700;
+  margin-left: 4px;
+  transition: all 0.2s;
+}
+
+.remove-item:hover {
+  transform: scale(1.2);
+}
+
+.add {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.add:active {
+  transform: scale(0.98);
+}
+
+/* Card khách hàng */
+.customer-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s;
+}
+
+.customer-card.hidden {
+  display: none;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  gap: 12px;
+}
+
+.customer-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.customer-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.customer-phone {
+  font-size: 14px;
+  color: #059669;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.total-badge {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 10px;
+  font-weight: 700;
+  color: #92400e;
+  font-size: 16px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 2px solid #fbbf24;
+}
+
+.card-content {
+  margin-bottom: 12px;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.info-label {
+  font-weight: 700;
+  color: #475569;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  color: #1f2937;
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.items-box {
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.6;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid #e2e8f0;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.payment-status {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.payment-status.paid {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  border: 2px solid #10b981;
+}
+
+.payment-status.unpaid {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 2px solid #fbbf24;
+}
+
+.payment-status:active {
+  transform: scale(0.95);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.edit-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+}
+
+.edit-btn:active {
+  transform: scale(0.95);
+}
+
+.delete-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  display: none;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state-text {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .container {
+    padding: 32px;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 32px;
+  }
+  
+  .input-form {
+    padding: 24px;
+  }
+  
+  .customer-card {
+    padding: 24px;
+  }
+  
+  .customer-name {
+    font-size: 20px;
+  }
+  
+  .empty-state {
+    padding: 60px 20px;
+  }
+  
+  .empty-state-icon {
+    font-size: 64px;
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media (max-width: 639px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* POPUP EDIT */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.popup {
+  background: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.popup h3 {
+  font-size: 20px;
+  color: #1f2937;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.popup input,
+.popup textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid #cbd5e1;
+  font-size: 15px;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+  font-family: inherit;
+}
+
+.popup input:focus,
+.popup textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.popup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-save {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-save:active {
+  transform: scale(0.98);
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  background: #e2e8f0;
+  color: #475569;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-cancel:active {
+  transform: scale(0.98);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>👥 Quản lý khách hàng thuê</h1>
+
+  <!-- Ô tìm kiếm -->
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input 
+      type="text" 
+      id="searchInput" 
+      class="search-input" 
+      placeholder="Tìm theo tên hoặc số điện thoại..."
+      oninput="searchCustomers()"
+    >
+    <div id="searchResult" class="search-result"></div>
+  </div>
+
+  <!-- Form thêm khách hàng -->
+  <div class="input-form">
+    <input id="customerName" class="input" placeholder="👤 Tên khách hàng">
+    <input id="customerPhone" class="input" type="tel" placeholder="📞 Số điện thoại">
+    
+    <!-- Item Selector từ web kho -->
+    <div class="item-selector">
+      <span class="search-icon-item">🔍</span>
+      <input 
+        id="itemSearch" 
+        class="item-search" 
+        type="text"
+        placeholder="🏷️ Tìm và chọn mẫu từ kho..."
+        oninput="searchItems()"
+        onfocus="showDropdown()"
+      >
+      <div id="itemDropdown" class="item-dropdown"></div>
+    </div>
+    
+    <div id="selectedItems" class="selected-items">
+      <div class="selected-items-title">Đã chọn:</div>
+      <div id="selectedItemsList"></div>
+    </div>
+    
+    <textarea id="customerItems" class="input" placeholder="📦 Hoặc nhập thủ công thông tin các mẫu
+Ví dụ:
+- Áo dài truyền thống: 5 cái
+- Váy cưới: 2 cái"></textarea>
+    
+    <input id="rentDate" class="input" type="date">
+    <input id="totalAmount" class="input" type="number" placeholder="💰 Tổng tiền (VNĐ)" min="0">
+    <button class="add" onclick="addCustomer()">✨ Thêm khách hàng</button>
+  </div>
+
+  <!-- Danh sách khách hàng -->
+  <div id="customerList"></div>
+  
+  <div id="emptyState" class="empty-state">
+    <div class="empty-state-icon">👥</div>
+    <div class="empty-state-text">Chưa có khách hàng nào</div>
+  </div>
+</div>
+
+<!-- POPUP EDIT -->
+<div id="editPopup" class="overlay" onclick="closeEditIfClickOutside(event)">
+  <div class="popup" onclick="event.stopPropagation()">
+    <h3>✏️ Chỉnh sửa thông tin</h3>
+    
+    <label>👤 Tên khách hàng:</label>
+    <input id="editName" type="text">
+    
+    <label>📞 Số điện thoại:</label>
+    <input id="editPhone" type="tel">
+    
+    <label>📦 Thông tin các mẫu:</label>
+    <textarea id="editItems"></textarea>
+    
+    <label>📅 Ngày thuê:</label>
+    <input id="editDate" type="date">
+    
+    <label>💰 Tổng tiền (VNĐ):</label>
+    <input id="editAmount" type="number" min="0">
+    
+    <div class="popup-buttons">
+      <button class="btn-save" onclick="saveEdit()">✓ Lưu</button>
+      <button class="btn-cancel" onclick="closeEdit()">✗ Hủy</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentEditCard = null;
+let selectedItemsData = [];
+
+// Format số tiền
+function formatMoney(amount) {
+  return new Intl.NumberFormat('vi-VN', { 
+    style: 'currency', 
+    currency: 'VND' 
+  }).format(amount);
+}
+
+// Load danh sách mẫu từ web-mobile localStorage
+function loadItemsFromWarehouse() {
+  const clothesData = localStorage.getItem('clothesData');
+  if (!clothesData) return [];
+  
+  try {
+    const data = JSON.parse(clothesData);
+    return data.map(item => ({
+      name: item.name,
+      price: item.price || 0,
+      namTotal: item.namTotal || 0,
+      nuTotal: item.nuTotal || 0,
+      total: (item.namTotal || 0) + (item.nuTotal || 0)
+    }));
+  } catch (e) {
+    console.error('Error loading warehouse data:', e);
+    return [];
+  }
+}
+
+// Hiển thị dropdown
+function showDropdown() {
+  searchItems();
+}
+
+// Ẩn dropdown khi click outside
+document.addEventListener('click', (e) => {
+  const selector = document.querySelector('.item-selector');
+  if (selector && !selector.contains(e.target)) {
+    document.getElementById('itemDropdown').classList.remove('show');
+  }
+});
+
+// Tìm kiếm items
+function searchItems() {
+  const searchTerm = document.getElementById('itemSearch').value.toLowerCase().trim();
+  const items = loadItemsFromWarehouse();
+  const dropdown = document.getElementById('itemDropdown');
+  
+  if (items.length === 0) {
+    dropdown.innerHTML = '<div class="no-items">📦 Chưa có mẫu nào trong kho.<br>Vui lòng thêm mẫu trong web quản lý kho trước.</div>';
+    dropdown.classList.add('show');
+    return;
+  }
+  
+  const filteredItems = searchTerm 
+    ? items.filter(item => item.name.toLowerCase().includes(searchTerm))
+    : items;
+  
+  if (filteredItems.length === 0) {
+    dropdown.innerHTML = '<div class="no-items">Không tìm thấy mẫu nào</div>';
+    dropdown.classList.add('show');
+    return;
+  }
+  
+  dropdown.innerHTML = filteredItems.map(item => `
+    <div class="item-option" onclick="selectItem('${item.name.replace(/'/g, "\\'")}', ${item.total})">
+      <div class="item-name">${item.name}</div>
+      <div class="item-details">
+        <span>📦 Tồn kho: ${item.total} cái</span>
+        ${item.namTotal > 0 ? `<span>👨 ${item.namTotal}</span>` : ''}
+        ${item.nuTotal > 0 ? `<span>👩 ${item.nuTotal}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+  
+  dropdown.classList.add('show');
+}
+
+// Chọn item
+function selectItem(name, stock) {
+  // Kiểm tra đã chọn chưa
+  if (selectedItemsData.find(item => item.name === name)) {
+    alert('⚠️ Mẫu này đã được chọn rồi!');
+    return;
+  }
+  
+  const qty = prompt(`Nhập số lượng thuê cho "${name}":\n(Tồn kho: ${stock} cái)`, '1');
+  if (!qty || +qty <= 0) return;
+  
+  if (+qty > stock) {
+    alert(`⚠️ Số lượng vượt quá tồn kho (${stock} cái)!`);
+    return;
+  }
+  
+  selectedItemsData.push({
+    name: name,
+    qty: +qty
+  });
+  
+  updateSelectedItems();
+  document.getElementById('itemSearch').value = '';
+  document.getElementById('itemDropdown').classList.remove('show');
+}
+
+// Cập nhật danh sách đã chọn
+function updateSelectedItems() {
+  const container = document.getElementById('selectedItems');
+  const list = document.getElementById('selectedItemsList');
+  
+  if (selectedItemsData.length === 0) {
+    container.classList.remove('show');
+    return;
+  }
+  
+  container.classList.add('show');
+  list.innerHTML = selectedItemsData.map((item, index) => `
+    <span class="selected-item">
+      ${item.name}: ${item.qty} cái
+      <span class="remove-item" onclick="removeSelectedItem(${index})">✗</span>
+    </span>
+  `).join('');
+}
+
+// Xóa item đã chọn
+function removeSelectedItem(index) {
+  selectedItemsData.splice(index, 1);
+  updateSelectedItems();
+}
+
+// Lưu dữ liệu vào LocalStorage
+function saveData() {
+  const customerList = document.getElementById('customerList');
+  const cards = customerList.querySelectorAll('.customer-card');
+  const data = [];
+  
+  cards.forEach(card => {
+    const name = card.querySelector('.customer-name').textContent;
+    const phone = card.querySelector('.customer-phone').textContent.replace('📞 ', '');
+    const items = card.querySelector('.items-box').textContent.trim();
+    const rentDate = card.dataset.rentDate;
+    const totalAmount = +card.dataset.totalAmount;
+    const isPaid = card.dataset.isPaid === 'true';
+    
+    data.push({ name, phone, items, rentDate, totalAmount, isPaid });
+  });
+  
+  localStorage.setItem('customerData', JSON.stringify(data));
+}
+
+// Load dữ liệu từ LocalStorage
+function loadData() {
+  const saved = localStorage.getItem('customerData');
+  if (!saved) return;
+  
+  const data = JSON.parse(saved);
+  const customerList = document.getElementById('customerList');
+  customerList.innerHTML = '';
+  
+  data.forEach(customer => {
+    const date = new Date(customer.rentDate);
+    const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    
+    const isPaid = customer.isPaid || false;
+    const paymentStatusHTML = isPaid 
+      ? '<div class="payment-status paid" onclick="togglePayment(this)">✓ Đã thu tiền</div>'
+      : '<div class="payment-status unpaid" onclick="togglePayment(this)">⏳ Chưa thu tiền</div>';
+    
+    const card = document.createElement('div');
+    card.className = 'customer-card';
+    card.dataset.rentDate = customer.rentDate;
+    card.dataset.totalAmount = customer.totalAmount;
+    card.dataset.isPaid = isPaid;
+    
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="customer-info">
+          <div class="customer-name">${customer.name}</div>
+          <div class="customer-phone">📞 ${customer.phone}</div>
+        </div>
+        <div class="total-badge">${formatMoney(customer.totalAmount)}</div>
+      </div>
+      
+      <div class="card-content">
+        <div class="info-row">
+          <div class="info-label">📅 Ngày thuê:</div>
+          <div class="info-value">${formattedDate}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">📦 Mẫu thuê:</div>
+        </div>
+        <div class="items-box">${customer.items}</div>
+      </div>
+      
+      <div class="card-footer">
+        ${paymentStatusHTML}
+        <div class="action-buttons">
+          <button class="edit-btn" onclick="editCustomer(this)">✏️ Sửa</button>
+          <button class="delete-btn" onclick="deleteCustomer(this)">🗑️ Xóa</button>
+        </div>
+      </div>
+    `;
+    
+    customerList.appendChild(card);
+  });
+  
+  updateEmptyState();
+}
+
+// Thêm khách hàng mới
+function addCustomer() {
+  const name = document.getElementById('customerName').value.trim();
+  const phone = document.getElementById('customerPhone').value.trim();
+  const manualItems = document.getElementById('customerItems').value.trim();
+  const rentDate = document.getElementById('rentDate').value;
+  const totalAmount = +document.getElementById('totalAmount').value;
+  
+  if (!name) {
+    alert('⚠️ Vui lòng nhập tên khách hàng!');
+    document.getElementById('customerName').focus();
+    return;
+  }
+  
+  if (!phone) {
+    alert('⚠️ Vui lòng nhập số điện thoại!');
+    document.getElementById('customerPhone').focus();
+    return;
+  }
+  
+  // Kết hợp items đã chọn và nhập tay
+  let itemsText = '';
+  
+  if (selectedItemsData.length > 0) {
+    itemsText = selectedItemsData.map(item => 
+      `- ${item.name}: ${item.qty} cái`
+    ).join('\n');
+  }
+  
+  if (manualItems) {
+    if (itemsText) itemsText += '\n';
+    itemsText += manualItems;
+  }
+  
+  if (!itemsText) {
+    alert('⚠️ Vui lòng chọn mẫu hoặc nhập thông tin các mẫu!');
+    document.getElementById('customerItems').focus();
+    return;
+  }
+  
+  if (!rentDate) {
+    alert('⚠️ Vui lòng chọn ngày thuê!');
+    document.getElementById('rentDate').focus();
+    return;
+  }
+  
+  if (!totalAmount || totalAmount <= 0) {
+    alert('⚠️ Vui lòng nhập tổng tiền!');
+    document.getElementById('totalAmount').focus();
+    return;
+  }
+  
+  const date = new Date(rentDate);
+  const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  
+  const card = document.createElement('div');
+  card.className = 'customer-card';
+  card.dataset.rentDate = rentDate;
+  card.dataset.totalAmount = totalAmount;
+  card.dataset.isPaid = 'false'; // Mặc định chưa thu tiền
+  
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="customer-info">
+        <div class="customer-name">${name}</div>
+        <div class="customer-phone">📞 ${phone}</div>
+      </div>
+      <div class="total-badge">${formatMoney(totalAmount)}</div>
+    </div>
+    
+    <div class="card-content">
+      <div class="info-row">
+        <div class="info-label">📅 Ngày thuê:</div>
+        <div class="info-value">${formattedDate}</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">📦 Mẫu thuê:</div>
+      </div>
+      <div class="items-box">${itemsText}</div>
+    </div>
+    
+    <div class="card-footer">
+      <div class="payment-status unpaid" onclick="togglePayment(this)">⏳ Chưa thu tiền</div>
+      <div class="action-buttons">
+        <button class="edit-btn" onclick="editCustomer(this)">✏️ Sửa</button>
+        <button class="delete-btn" onclick="deleteCustomer(this)">🗑️ Xóa</button>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('customerList').appendChild(card);
+  
+  // Reset form
+  document.getElementById('customerName').value = '';
+  document.getElementById('customerPhone').value = '';
+  document.getElementById('customerItems').value = '';
+  document.getElementById('rentDate').value = '';
+  document.getElementById('totalAmount').value = '';
+  document.getElementById('itemSearch').value = '';
+  selectedItemsData = [];
+  updateSelectedItems();
+  document.getElementById('customerName').focus();
+  
+  // Reset search
+  document.getElementById('searchInput').value = '';
+  searchCustomers();
+  
+  updateEmptyState();
+  saveData();
+}
+
+// Xóa khách hàng
+function deleteCustomer(button) {
+  if (confirm('🗑️ Bạn có chắc muốn xóa khách hàng này?')) {
+    button.closest('.customer-card').remove();
+    searchCustomers();
+    updateEmptyState();
+    saveData();
+  }
+}
+
+// Toggle trạng thái thanh toán
+function togglePayment(statusDiv) {
+  const card = statusDiv.closest('.customer-card');
+  const isPaid = card.dataset.isPaid === 'true';
+  
+  if (isPaid) {
+    // Chuyển sang chưa thu tiền
+    card.dataset.isPaid = 'false';
+    statusDiv.className = 'payment-status unpaid';
+    statusDiv.innerHTML = '⏳ Chưa thu tiền';
+  } else {
+    // Chuyển sang đã thu tiền
+    card.dataset.isPaid = 'true';
+    statusDiv.className = 'payment-status paid';
+    statusDiv.innerHTML = '✓ Đã thu tiền';
+  }
+  
+  saveData();
+}
+
+// Mở popup chỉnh sửa
+function editCustomer(button) {
+  const card = button.closest('.customer-card');
+  currentEditCard = card;
+  
+  const name = card.querySelector('.customer-name').textContent;
+  const phone = card.querySelector('.customer-phone').textContent.replace('📞 ', '');
+  const items = card.querySelector('.items-box').textContent.trim();
+  const rentDate = card.dataset.rentDate;
+  const totalAmount = card.dataset.totalAmount;
+  
+  document.getElementById('editName').value = name;
+  document.getElementById('editPhone').value = phone;
+  document.getElementById('editItems').value = items;
+  document.getElementById('editDate').value = rentDate;
+  document.getElementById('editAmount').value = totalAmount;
+  
+  document.getElementById('editPopup').style.display = 'flex';
+  setTimeout(() => document.getElementById('editName').focus(), 100);
+}
+
+// Lưu chỉnh sửa
+function saveEdit() {
+  if (!currentEditCard) return;
+  
+  const name = document.getElementById('editName').value.trim();
+  const phone = document.getElementById('editPhone').value.trim();
+  const items = document.getElementById('editItems').value.trim();
+  const rentDate = document.getElementById('editDate').value;
+  const totalAmount = +document.getElementById('editAmount').value;
+  
+  if (!name || !phone || !items || !rentDate || !totalAmount) {
+    alert('⚠️ Vui lòng điền đầy đủ thông tin!');
+    return;
+  }
+  
+  const date = new Date(rentDate);
+  const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  
+  // Cập nhật thông tin
+  currentEditCard.querySelector('.customer-name').textContent = name;
+  currentEditCard.querySelector('.customer-phone').textContent = `📞 ${phone}`;
+  currentEditCard.querySelector('.info-value').textContent = formattedDate;
+  currentEditCard.querySelector('.items-box').textContent = items;
+  currentEditCard.querySelector('.total-badge').textContent = formatMoney(totalAmount);
+  currentEditCard.dataset.rentDate = rentDate;
+  currentEditCard.dataset.totalAmount = totalAmount;
+  
+  saveData();
+  closeEdit();
+}
+
+// Đóng popup edit
+function closeEdit() {
+  document.getElementById('editPopup').style.display = 'none';
+  currentEditCard = null;
+}
+
+// Đóng popup khi click outside
+function closeEditIfClickOutside(event) {
+  if (event.target === event.currentTarget) {
+    closeEdit();
+  }
+}
+
+// Tìm kiếm khách hàng
+function searchCustomers() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.customer-card');
+  let visibleCount = 0;
+  
+  cards.forEach(card => {
+    const name = card.querySelector('.customer-name').textContent.toLowerCase();
+    const phone = card.querySelector('.customer-phone').textContent.toLowerCase();
+    
+    if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+      card.classList.remove('hidden');
+      visibleCount++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+  
+  const searchResult = document.getElementById('searchResult');
+  if (searchTerm) {
+    searchResult.textContent = `Tìm thấy ${visibleCount} kết quả`;
+  } else {
+    searchResult.textContent = '';
+  }
+  
+  updateEmptyState();
+}
+
+// Cập nhật trạng thái empty state
+function updateEmptyState() {
+  const customerList = document.getElementById('customerList');
+  const emptyState = document.getElementById('emptyState');
+  const cards = customerList.querySelectorAll('.customer-card:not(.hidden)');
+  emptyState.style.display = cards.length === 0 ? 'block' : 'none';
+}
+
+// Set ngày hiện tại
+document.getElementById('rentDate').valueAsDate = new Date();
+
+// Enter key handlers
+document.getElementById('customerName').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('customerPhone').focus();
+  }
+});
+
+document.getElementById('customerPhone').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('customerItems').focus();
+  }
+});
+
+document.getElementById('totalAmount').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addCustomer();
+  }
+});
+
+// Load dữ liệu khi trang được tải
+loadData();
+updateEmptyState();
+</script>
+
+</body>
+</html>
